@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'screens/register.dart';
+// void main() {
+//   runApp(App());
+// }
 
-void main() {
-  runApp(App());
-}
+void main() => runApp(App());
 
 class App extends StatelessWidget {
   @override
@@ -54,18 +56,28 @@ class _HomeState extends State<Home> {
         'Sign In',
         style: TextStyle(color: Colors.white),
       ),
-      onPressed: () {},
+      onPressed: () {
+        print('You Click SignIn');
+      },
     );
   }
 
-  Widget signUpButton() {
+  Widget signUpButton(BuildContext context) {
     return RaisedButton(
       color: Colors.orange[100],
       child: Text(
         'Sign Up',
         style: TextStyle(color: Colors.white),
       ),
-      onPressed: () {},
+      onPressed: () {
+        //log cat
+        print('You Click signUp');
+        // ------ Routing -----------
+        var registerRoute =
+            new MaterialPageRoute(builder: (BuildContext context)=>Register());
+        Navigator.of(context).push(registerRoute);
+      },
+       // ------ Routing -----------
     );
   }
 
@@ -88,9 +100,12 @@ class _HomeState extends State<Home> {
               nameApp,
               emailTextField(),
               passwordTextField(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[signInButton(), signUpButton()],
+              Container(
+                margin: EdgeInsets.only(top: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[signInButton(), signUpButton(context)],
+                ),
               )
             ],
           ),
