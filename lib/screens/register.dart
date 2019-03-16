@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' show get;
+import 'dart:convert'; // convert object to json
 
 class Register extends StatefulWidget {
   @override
@@ -56,13 +58,33 @@ class _RegisterState extends State<Register> {
     );
   }
 
-  void checkValueBeforeUpload() {
+  void checkValueBeforeUpload(BuildContext context) {
     print('Your Click Upload');
     print(formKey.currentState.validate());
-    if(formKey.currentState.validate()){
+    if (formKey.currentState.validate()) {
       formKey.currentState.save();
-      print('name = $nameString, email = $emailString, password = $passwordString');
+      print(
+          'name = $nameString, email = $emailString, password = $passwordString');
+      uploadValueToServer(context, nameString, emailString, passwordString);
     }
+  }
+
+  void uploadValueToServer(
+      BuildContext context, String name, String email, String password) async {
+    String urlString =
+        'http://www.androidthai.in.th/chit/addUserMuz.php?isAdd=true&Name=$name&Email=$email&Password=$password';
+    print('url=$urlString');
+//  response value
+  var response  = await get(urlString);
+  var result = json.decode(response.body);
+print('result = $result');
+
+if(result.toString() == 'true') {
+  Navigator.pop(context);
+}else{
+  print('Cannot Upload');
+}
+
   }
 
   @override
@@ -75,7 +97,7 @@ class _RegisterState extends State<Register> {
               tooltip: 'Upload to Server',
               icon: Icon(Icons.cloud_upload),
               onPressed: () {
-                checkValueBeforeUpload();
+                checkValueBeforeUpload(context);
               },
             )
           ],
@@ -96,5 +118,5 @@ class _RegisterState extends State<Register> {
                 ),
               )),
         ));
-  }
-}
+  } // Build method
+} // _Regiter State Class

@@ -23,6 +23,10 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   // Exlicit
+  final formKey = GlobalKey<FormState>();
+
+  String emailString, passwordString;
+
   Widget nameApp = Text(
     'Muz Food',
     style: TextStyle(
@@ -39,6 +43,14 @@ class _HomeState extends State<Home> {
     return TextFormField(
       decoration: InputDecoration(
           labelText: 'Email Address', hintText: 'your@email.com'),
+      validator: (String emailValue) {
+        if (!emailValue.contains('@')) {
+          return 'please fill email format';
+        }
+      },
+      onSaved: (String emailValue) {
+        emailString = emailValue;
+      },
     );
   }
 
@@ -46,10 +58,22 @@ class _HomeState extends State<Home> {
     return TextFormField(
       decoration:
           InputDecoration(labelText: 'Password', hintText: 'more 6 charater'),
+      validator: (String passwordValue) {
+        if (passwordValue.length <= 5) {
+          return 'please fill password more 6 charator';
+        }
+      },
+      onSaved: (String passwordValue) {
+        passwordString = passwordValue;
+      },
     );
   }
 
-  Widget signInButton() {
+  void checkUserAndPass(BuildContext context, String email, String password) {
+    print('check:: email = $email,password = $password ');
+  }
+
+  Widget signInButton(BuildContext context) {
     return RaisedButton(
       color: Colors.orange[700],
       child: Text(
@@ -58,6 +82,12 @@ class _HomeState extends State<Home> {
       ),
       onPressed: () {
         print('You Click SignIn');
+        print(formKey.currentState.validate());
+
+        if (formKey.currentState.validate()) {
+          formKey.currentState.save();
+          checkUserAndPass(context,emailString,passwordString);
+        }
       },
     );
   }
@@ -73,18 +103,20 @@ class _HomeState extends State<Home> {
         //log cat
         print('You Click signUp');
         // ------ Routing -----------
-        var registerRoute =
-            new MaterialPageRoute(builder: (BuildContext context)=>Register());
+        var registerRoute = new MaterialPageRoute(
+            builder: (BuildContext context) => Register());
         Navigator.of(context).push(registerRoute);
       },
-       // ------ Routing -----------
+      // ------ Routing -----------
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+        body: Form(
+      key: formKey,
+      child: Container(
         alignment: Alignment.center,
         decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -104,13 +136,13 @@ class _HomeState extends State<Home> {
                 margin: EdgeInsets.only(top: 10.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[signInButton(), signUpButton(context)],
+                  children: <Widget>[signInButton(context), signUpButton(context)],
                 ),
               )
             ],
           ),
         ),
       ),
-    );
+    ));
   }
 }
