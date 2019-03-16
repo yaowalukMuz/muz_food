@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'screens/register.dart';
 import 'package:http/http.dart' show get;
 import 'dart:convert';
+import 'models/user_model.dart';
+import 'screens/my_service.dart';
 
 // void main() {
 //   runApp(App());
@@ -98,9 +100,28 @@ class _HomeState extends State<Home> {
     var result = json.decode(response.body);
     print('result = $result');
     if (result.toString() == 'null') {
-      showSnackBar('User False');
+      showSnackBar('User Not Found');
       // showAlertDialog(context);
-    } else {}
+    } else {
+      for (var data in result) {
+        print('data = $data');
+        var userModel = UserModel.fromJson(data);
+        int id = userModel.id;
+        String name = userModel.name;
+        String email = userModel.email;
+        String pass = userModel.password;
+        print('name :$name,truePass : $pass ');
+        if (password == pass) {
+          showSnackBar('Welcom $name');
+          var myServiceRoute = new MaterialPageRoute(
+              builder: (BuildContext context) => MyService(nameLoginString: name,));
+              Navigator.of(context).push(myServiceRoute);
+
+        } else {
+          showSnackBar('please try again password false');
+        }
+      }
+    } //   end if result is null
   }
 
   showAlertDialog(BuildContext context) {
