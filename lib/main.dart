@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'screens/register.dart';
+import 'package:http/http.dart' show get;
+import 'dart:convert';
+
 // void main() {
 //   runApp(App());
 // }
@@ -24,8 +27,25 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   // Exlicit
   final formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   String emailString, passwordString;
+
+  void showSnackBar(String message) {
+    final snackBar = new SnackBar(
+      content: Text(
+        message,
+        style: TextStyle(fontSize: 20.0),
+      ),
+      backgroundColor: Colors.red,
+      duration: new Duration(seconds: 3),
+      action: new SnackBarAction(
+        label: 'Hint',
+        onPressed: () {},
+      ),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
 
   Widget nameApp = Text(
     'Muz Food',
@@ -69,8 +89,40 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void checkUserAndPass(BuildContext context, String email, String password) {
+  void checkUserAndPass(
+      BuildContext context, String email, String password) async {
     print('check:: email = $email,password = $password ');
+    String urlString =
+        'http://androidthai.in.th/chit/getUserWhereUserMuz.php?isAdd=true&Email=$email';
+    var response = await get(urlString);
+    var result = json.decode(response.body);
+    print('result = $result');
+    if (result.toString() == 'null') {
+      showSnackBar('User False');
+      // showAlertDialog(context);
+    } else {}
+  }
+
+  showAlertDialog(BuildContext context) {
+    Widget okButton = FlatButton(
+      child: Text('OK'),
+      onPressed: () {
+        Navigator.of(context).pop(); // dismiss dialog
+      },
+    );
+
+    AlertDialog alertDialog = AlertDialog(
+      title: Text('Have Problem!'),
+      content: Text('User false'),
+      actions: <Widget>[okButton],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alertDialog;
+      },
+    );
   }
 
   Widget signInButton(BuildContext context) {
@@ -86,7 +138,7 @@ class _HomeState extends State<Home> {
 
         if (formKey.currentState.validate()) {
           formKey.currentState.save();
-          checkUserAndPass(context,emailString,passwordString);
+          checkUserAndPass(context, emailString, passwordString);
         }
       },
     );
@@ -114,35 +166,39 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
         body: Form(
-      key: formKey,
-      child: Container(
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                colors: [Colors.green[900], Colors.lightGreen],
-                begin: Alignment.topCenter)),
-        child: Container(
-          padding: EdgeInsets.all(30.0),
-          margin: EdgeInsets.only(top: 80.0),
-          constraints: BoxConstraints.expand(width: 300.0),
-          child: Column(
-            children: <Widget>[
-              logo,
-              nameApp,
-              emailTextField(),
-              passwordTextField(),
-              Container(
-                margin: EdgeInsets.only(top: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[signInButton(context), signUpButton(context)],
-                ),
-              )
-            ],
+          key: formKey,
+          child: Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    colors: [Colors.green[900], Colors.lightGreen],
+                    begin: Alignment.topCenter)),
+            child: Container(
+              padding: EdgeInsets.all(30.0),
+              margin: EdgeInsets.only(top: 80.0),
+              constraints: BoxConstraints.expand(width: 300.0),
+              child: Column(
+                children: <Widget>[
+                  logo,
+                  nameApp,
+                  emailTextField(),
+                  passwordTextField(),
+                  Container(
+                    margin: EdgeInsets.only(top: 10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        signInButton(context),
+                        signUpButton(context)
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
-    ));
+        ));
   }
 }
